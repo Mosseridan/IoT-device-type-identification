@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>Python</ID>
+  <OriginalElement>#C:/Users/mosse/Desktop/projects/IoT device type identification/device_classifier.py</OriginalElement>
+  <nodes>
+    <node x="0.0" y="542.0">device_session_regressor.DeviceSessionRegressor</node>
+    <node x="0.0" y="944.0">device_sequence_classifier.DeviceSequenceClassifier</node>
+    <node x="0.0" y="1134.0">device_classifier.DeviceClassifier</node>
+    <node x="213.75" y="0.0">object</node>
+    <node x="361.0" y="553.0">multiple_device_classifier.MultipleDeviceClassifier</node>
+    <node x="0.0" y="754.0">device_session_classidier.DeviceSessionClassifier</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="device_session_classidier.DeviceSessionClassifier" target="device_session_regressor.DeviceSessionRegressor">
+      <point x="0.0" y="-70.0" />
+      <point x="0.0" y="81.0" />
+    </edge>
+    <edge source="multiple_device_classifier.MultipleDeviceClassifier" target="object">
+      <point x="0.0" y="-70.0" />
+      <point x="508.0" y="517.0" />
+      <point x="402.0" y="517.0" />
+      <point x="62.75" y="246.0" />
+    </edge>
+    <edge source="device_session_regressor.DeviceSessionRegressor" target="object">
+      <point x="0.0" y="-81.0" />
+      <point x="170.5" y="517.0" />
+      <point x="276.5" y="517.0" />
+      <point x="-62.75" y="246.0" />
+    </edge>
+    <edge source="device_sequence_classifier.DeviceSequenceClassifier" target="device_session_classidier.DeviceSessionClassifier">
+      <point x="0.0" y="-70.0" />
+      <point x="0.0" y="70.0" />
+    </edge>
+    <edge source="device_classifier.DeviceClassifier" target="device_sequence_classifier.DeviceSequenceClassifier">
+      <point x="0.0" y="-47.5" />
+      <point x="0.0" y="70.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="153.5" y="662.0" />
+  <SelectedNodes>
+    <node>multiple_device_classifier.MultipleDeviceClassifier</node>
+  </SelectedNodes>
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Inner Classes</Category>
+    <Category>Fields</Category>
+  </Categories>
+</Diagram>
+
