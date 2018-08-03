@@ -21,5 +21,6 @@ class DeviceSessionRegressor(object):
 
     def predict(self, train, validation):
     # TODO: Implement this: predicts probability of session originating from this dev
+    # TODO: should it get the train and validation as parameter or a feature vector of one session? 
         return np.random.random()
 
