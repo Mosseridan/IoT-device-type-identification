@@ -2,6 +2,8 @@ from device_session_regressor import DeviceSessionRegressor
 
 
 class DeviceSessionClassifier(DeviceSessionRegressor):
+    """ Classifier used for determining whether a given session originated from a specifc device or not """
+    
     def __init__(self, dev_name, train=None, validation=None):
         DeviceSessionRegressor(dev_name)
         self.threshold = 0.5
