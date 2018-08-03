@@ -23,4 +23,10 @@ class DeviceSessionRegressor(object):
     # TODO: Implement this: predicts probability of session originating from this dev
     # TODO: should it get the train and validation as parameter or a feature vector of one session? 
         return np.random.random()
+    
+    def predict_proba(self, model, session):
+        """ This method returns the probability that the given session (feature vector) was originated from the relevant
+        device according to the given model """
+        return model.predict_proba(session)
+            
 
