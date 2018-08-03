@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 
 class DeviceSessionRegressor(object):
+    """ A regressor used for predicting the probablity that a given session was originated from a specific device """
+    
     def __init__(self, dev_name, train=None, validation=None):
         self.dev_name = dev_name
         if train and validation:
