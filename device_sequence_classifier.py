@@ -2,6 +2,7 @@ from device_session_classidier import DeviceSessionClassifier
 
 
 class DeviceSequenceClassifier(DeviceSessionClassifier):
+    """ A classifier used for determining whether a given sequence of sessions was originated from a specifc device or not """
 
     def __init__(self, dev_name, train=None, validation=None):
         DeviceSessionClassifier(dev_name)
