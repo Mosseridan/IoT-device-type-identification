@@ -11,6 +11,7 @@ import seaborn as sns
 sns.set_style("white")
 
 from device_session_regressor import DeviceSessionRegressor
+from device_session_classifier import DeviceSessionClassifier
 
 
 def is_dev(this_dev_name, dev_name):
@@ -91,6 +92,11 @@ cart = tree.DecisionTreeClassifier(criterion='entropy', max_depth=8, min_samples
 # device_session_regressor = DeviceSessionRegressor('security_camera')
 # cart = device_session_regressor.train(cart, x_train, y_train)
 # print(device_session_regressor.predict(cart, [x_train[10]]))
+
+# Usage example of the device session classifier 
+#device_session_classifier = DeviceSessionClassifier('security_camera')
+#cart = device_session_classifier.train(cart, x_train, y_train)
+#print(device_session_classifier.predict(cart, [x_train[10]]))
 
 
 # n_splits = 10
