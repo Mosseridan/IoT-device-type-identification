@@ -2,13 +2,15 @@ import pandas as pd
 import numpy
 from os import path
 from sklearn import tree, ensemble
-from imblearn.under_sampling import RandomUnderSampler
-from imblearn.pipeline import make_pipeline
+#from imblearn.under_sampling import RandomUnderSampler
+#from imblearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set_style("white")
+
+from device_session_regressor import DeviceSessionRegressor
 
 
 def is_dev(this_dev_name, dev_name):
@@ -60,7 +62,7 @@ use_cols = ['ttl_A_avg', 'ttl_A_entropy', 'ttl_A_firstQ', 'ttl_A_max', 'ttl_A_me
             'B_port_is_5223', 'B_port_is_5228', 'B_port_is_54975', 'B_port_is_80', 'B_port_is_8080', 'B_port_is_8280',
             'B_port_is_9543', 'B_port_is_else', 'device_category']
 
-train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False)
+train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False,nrows=10000)
 # validation = pd.read_csv(path.abspath('data/validation.csv'), low_memory=False)
 # test = pd.read_csv(path.abspath('data/test.csv'), low_memory=False)
 
@@ -80,10 +82,15 @@ cart = tree.DecisionTreeClassifier(criterion='entropy', max_depth=8, min_samples
 # forest = ensemble.RandomForestClassifier(criterion='entropy', max_depth=15, min_samples_leaf=5)
 # gboost = ensemble.GradientBoostingClassifier(max_depth=15, min_samples_leaf=5)
 #
-cart.fit(x_train, y_train)
+#cart.fit(x_train, y_train)
 # rus.fit(x_train, y_train)
 # forest.fit(x_train, y_train)
 #gboost.fit(X_train, y_train)
+
+# Usage example of the device session regressor 
+# device_session_regressor = DeviceSessionRegressor('security_camera')
+# cart = device_session_regressor.train(cart, x_train, y_train)
+# print(device_session_regressor.predict(cart, [x_train[10]]))
 
 
 # n_splits = 10
