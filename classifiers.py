@@ -64,7 +64,7 @@ use_cols = ['ttl_A_avg', 'ttl_A_entropy', 'ttl_A_firstQ', 'ttl_A_max', 'ttl_A_me
             'B_port_is_5223', 'B_port_is_5228', 'B_port_is_54975', 'B_port_is_80', 'B_port_is_8080', 'B_port_is_8280',
             'B_port_is_9543', 'B_port_is_else', 'device_category']
 
-train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False,nrows=10000)
+train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False)
 #validation = pd.read_csv(path.abspath('data/validation.csv'), usecols=use_cols, low_memory=False,nrows=10000)
 # test = pd.read_csv(path.abspath('data/test.csv'), low_memory=False)
 
