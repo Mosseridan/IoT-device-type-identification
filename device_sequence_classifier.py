@@ -1,23 +1,25 @@
-from device_session_classidier import DeviceSessionClassifier
+from device_session_classifier import DeviceSessionClassifier
 
 
 class DeviceSequenceClassifier(DeviceSessionClassifier):
     """ A classifier used for determining whether a given sequence of sessions was originated from a specifc device or not """
 
-    def __init__(self, dev_name, train=None, validation=None):
-        DeviceSessionClassifier(dev_name)
+    def __init__(self, dev_name):
+        super().__init__(dev_name)
         self.opt_seq_len = 1
-        if train and validation:
-            self.train(train, validation)
 
-    def train(self, train, validation):
-        super().train(train, validation)
-        self.opt_seq_len = self.find_opt_seq_len(validation)
+    def train(self, model, x_train, y_train, validation):
+        model = super().train(model, x_train, y_train)
+        #self.opt_seq_len = self.find_opt_seq_len(model, validation)
+        return model 
 
-    def predict(self, sequence):
-        return 1 if sum(map(super().predict, sequence)) > len(sequence) / 2 else 0
+    def predict(self, model, sequence):
+        predictions_sum = 0
+        for session in sequence:
+            predictions_sum += super().predict(model, session)
+        return 1 if predictions_sum > (len(sequence) / 2) else 0 
 
-    def find_opt_seq_len(self, validation):
+    def find_opt_seq_len(self, model, validation):
         # Finds minimal seq length s.t accuracy=1 on all sessions
         opt_seq_len = 1
         # Find minimal sequence length s.t FPR=1 for all other devs
@@ -26,7 +28,8 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
             seq_len = 1
             while start + seq_len <= len(dev_sessions):
                 is_dev = dev_name == self.dev_name
-                is_dev_pred = self.predict(dev_sessions[start:start + seq_len])
+                print("dev_sessions {}" .format(dev_sessions))
+                is_dev_pred = self.predict(model, dev_sessions[start:start + seq_len])
                 if is_dev == is_dev_pred:
                     start += 1
                 else:

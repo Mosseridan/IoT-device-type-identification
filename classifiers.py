@@ -2,8 +2,8 @@ import pandas as pd
 import numpy
 from os import path
 from sklearn import tree, ensemble
-#from imblearn.under_sampling import RandomUnderSampler
-#from imblearn.pipeline import make_pipeline
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ sns.set_style("white")
 
 from device_session_regressor import DeviceSessionRegressor
 from device_session_classifier import DeviceSessionClassifier
+from device_sequence_classifier import DeviceSequenceClassifier
 
 
 def is_dev(this_dev_name, dev_name):
@@ -64,7 +65,7 @@ use_cols = ['ttl_A_avg', 'ttl_A_entropy', 'ttl_A_firstQ', 'ttl_A_max', 'ttl_A_me
             'B_port_is_9543', 'B_port_is_else', 'device_category']
 
 train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False,nrows=10000)
-# validation = pd.read_csv(path.abspath('data/validation.csv'), low_memory=False)
+#validation = pd.read_csv(path.abspath('data/validation.csv'), usecols=use_cols, low_memory=False,nrows=10000)
 # test = pd.read_csv(path.abspath('data/test.csv'), low_memory=False)
 
 x_train = train.drop(cols_to_drop, 1)
@@ -97,6 +98,11 @@ cart = tree.DecisionTreeClassifier(criterion='entropy', max_depth=8, min_samples
 #device_session_classifier = DeviceSessionClassifier('security_camera')
 #cart = device_session_classifier.train(cart, x_train, y_train)
 #print(device_session_classifier.predict(cart, [x_train[10]]))
+
+# Usage example of the device sequence classifier 
+#device_sequence_classifier = DeviceSequenceClassifier('security_camera')
+#cart = device_sequence_classifier.train(cart, x_train, y_train, train)
+#print(device_sequence_classifier.predict(cart, [x_train]))
 
 
 # n_splits = 10
