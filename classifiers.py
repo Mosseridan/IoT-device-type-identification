@@ -2,8 +2,8 @@ import pandas as pd
 import numpy
 from os import path
 from sklearn import tree, ensemble
-#from imblearn.under_sampling import RandomUnderSampler
-#from imblearn.pipeline import make_pipeline
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.pipeline import make_pipeline
 from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
