@@ -4,6 +4,7 @@ from os import path
 from sklearn import tree, ensemble
 from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import make_pipeline
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -35,6 +36,17 @@ def clear_missing_data(x_train, y_train):
             new_y_train.append(y_train[i])
     return x_train, new_y_train
 
+def perform_feature_scaling(x_train):
+    """
+    This method is used in order to perform feature scaling according to the 
+    min-max scaler. The scaler can be replaced with another one, like the
+    standard scaler 
+    """
+    scaler = MinMaxScaler()
+    scaler.fit(x_train)
+    return scaler.transform(x_train)
+    
+
 
 y_col = 'device_category'
 cols_to_drop = ['device_category']
@@ -55,6 +67,7 @@ train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory
 x_train = train.drop(cols_to_drop, 1)
 y_train = pd.Series(get_is_dev_vec('security_camera', train[y_col]))
 x_train, y_train = clear_missing_data(x_train, y_train)
+x_train = perform_feature_scaling(x_train)
         
 
 # x_validation = validation.drop(cols_to_drop, 1)
