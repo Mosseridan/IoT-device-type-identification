@@ -1,0 +1,87 @@
+import pandas as pd
+from os import path
+from sklearn import tree, ensemble
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.pipeline import make_pipeline
+from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style("white")
+
+
+def is_dev(this_dev_name, dev_name):
+    return 1 if this_dev_name == dev_name else 0
+
+
+def get_is_dev_vec(this_dev_name, dev_names):
+    return [is_dev(this_dev_name, dev_name) for dev_name in dev_names]
+
+
+y_col = 'device_category'
+cols_to_drop = ['device_category']
+use_cols = ['ttl_A_avg', 'ttl_A_entropy', 'ttl_A_firstQ', 'ttl_A_max', 'ttl_A_median', 'ttl_A_min', 'ttl_A_stdev',
+            'ttl_A_sum', 'ttl_A_thirdQ', 'ttl_A_var', 'ttl_B_avg', 'ttl_B_entropy', 'ttl_B_firstQ', 'ttl_B_max',
+            'ttl_B_median', 'ttl_B_min', 'ttl_B_stdev', 'ttl_B_sum', 'ttl_B_thirdQ', 'ttl_B_var', 'ttl_avg',
+            'ttl_entropy', 'ttl_firstQ', 'ttl_max', 'ttl_median', 'ttl_min', 'ttl_stdev', 'ttl_sum', 'ttl_thirdQ',
+            'ttl_var', 'is_ssl', 'is_http', 'is_g_http', 'is_cdn_http', 'is_img_http', 'is_ad_http',
+            'is_numeric_url_http', 'is_numeric_url_with_port_http','is_tv_http', 'is_cloud_http', 'B_is_system_port',
+            'B_is_user_port', 'B_is_dynamic_and_or_private_port', 'B_port_is_11095', 'B_port_is_1900', 'B_port_is_5222',
+            'B_port_is_5223', 'B_port_is_5228', 'B_port_is_54975', 'B_port_is_80', 'B_port_is_8080', 'B_port_is_8280',
+            'B_port_is_9543', 'B_port_is_else', 'device_category']
+
+train = pd.read_csv(path.abspath('data/train.csv'), usecols=use_cols, low_memory=False)
+# validation = pd.read_csv(path.abspath('data/validation.csv'), low_memory=False)
+# test = pd.read_csv(path.abspath('data/test.csv'), low_memory=False)
+
+x_train = train.drop(cols_to_drop, 1)
+y_train = pd.Series(get_is_dev_vec('security_camera', train[y_col]))
+
+# x_validation = validation.drop(cols_to_drop, 1)
+# y_validation = validation[y_col]
+# x_test = test.drop(cols_to_drop, 1)
+# y_test = test[y_col]
+
+cart = tree.DecisionTreeClassifier(criterion='entropy', max_depth=8, min_samples_leaf=5)
+# rus = make_pipeline(RandomUnderSampler(),tree.DecisionTreeClassifier(criterion='entropy', max_depth=8, min_samples_leaf=5))
+# forest = ensemble.RandomForestClassifier(criterion='entropy', max_depth=15, min_samples_leaf=5)
+# gboost = ensemble.GradientBoostingClassifier(max_depth=15, min_samples_leaf=5)
+#
+cart.fit(x_train, y_train)
+# rus.fit(x_train, y_train)
+# forest.fit(x_train, y_train)
+#gboost.fit(X_train, y_train)
+
+
+# n_splits = 10
+#
+# ub = BaggingClassifier(warm_start=True, n_estimators=0)
+#
+# for split in range(n_splits):
+#     X_res, y_res = RandomUnderSampler(random_state=split).fit_sample(X_train,y_train)
+#     ub.n_estimators += 1
+#     ub.fit(X_res, y_res)
+#
+# def roc_auc_plot(y_true, y_proba, label=' ', l='-', lw=1.0):
+#     from sklearn.metrics import roc_curve, roc_auc_score
+#     fpr, tpr, _ = roc_curve(y_true, y_proba[:,1])
+#     ax.plot(fpr, tpr, linestyle=l, linewidth=lw,
+#             label="%s (area=%.3f)"%(label,roc_auc_score(y_true, y_proba[:,1])))
+#
+# f, ax = plt.subplots(figsize=(6,6))
+#
+# roc_auc_plot(y_test,ub.predict_proba(X_test),label='UB ',l='-')
+# roc_auc_plot(y_test,forest.predict_proba(X_test),label='FOREST ',l='--')
+# roc_auc_plot(y_test,cart.predict_proba(X_test),label='CART', l='-.')
+# roc_auc_plot(y_test,rus.predict_proba(X_test),label='RUS',l=':')
+#
+# ax.plot([0,1], [0,1], color='k', linewidth=0.5, linestyle='--',
+#         label='Random Classifier')
+# ax.legend(loc="lower right")
+# ax.set_xlabel('False Positive Rate')
+# ax.set_ylabel('True Positive Rate')
+# ax.set_xlim([0, 1])
+# ax.set_ylim([0, 1])
+# ax.set_title('Receiver Operator Characteristic curves')
+# sns.despine()
+
+print("@@@ DONE @@@")

@@ -2,7 +2,6 @@ import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.python.keras.preprocessing.text import Tokenizer
 
 
 def load_data(data_path, label_col, feature_cols=None):
@@ -139,7 +138,7 @@ def is_eq(a):
 
 
 def create_iot_classifier(train, validation):
-    train_sessions = train.drop('device_category')
+    train_sessions = train.drop('device_category',1)
     validation_sessions = validation.drop('device_category')
     devs = train['device_category'].unique()
     train_is_devt_dict = {dev: train['device_category'].apply(is_eq(dev)) for dev in devs}
@@ -160,5 +159,6 @@ validation = pd.read_csv(os.path.abspath('data/validation.csv'), usecols=['ack',
 test = pd.read_csv(os.path.abspath('data/test.csv'), usecols=['ack', 'device_category'], low_memory=False)
 
 classifier = create_iot_classifier(train, validation)
+
 
 print('@@ DONE @@')
