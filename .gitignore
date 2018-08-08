@@ -103,7 +103,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-.idea/*
+.idea/
 
 data/test.csv
 data/train.csv
