@@ -74,6 +74,7 @@ def roc_auc_plot(y_true, y_proba, label=' ', l='-', lw=1.0):
     return score
 
 
+
 y_col = 'device_category'
 cols_to_drop = ['device_category']
 use_cols = pd.read_csv(os.path.abspath('data/train.csv'))
@@ -81,7 +82,7 @@ use_cols = pd.read_csv(os.path.abspath('data/train.csv'))
 
 # Load Data
 train = pd.read_csv(os.path.abspath('data/train.csv'), usecols=use_cols, low_memory=False)
-# validation = pd.read_csv(os.path.abspath('data/validation.csv'), usecols=use_cols, low_memory=False)
+validation = pd.read_csv(os.path.abspath('data/validation.csv'), usecols=use_cols, low_memory=False)
 test = pd.read_csv(os.path.abspath('data/test.csv'), usecols=use_cols, low_memory=False)
 
 # Get device list
@@ -89,31 +90,33 @@ devices = train[y_col].unique()
 
 # Shuffle Data
 train = shuffle(train)
-# validation = shuffle(validation)
+validation = shuffle(validation)
 test = shuffle(test)
 
 # Remove missing data
 train = clear_missing_data(train)
-# validation = clear_missing_data(validation)
+validation = clear_missing_data(validation)
 test = clear_missing_data(test)
 
 # Seperate data to features
 x_train = train.drop(cols_to_drop, 1)
-# x_validation = validation.drop(cols_to_drop, 1)
+x_validation = validation.drop(cols_to_drop, 1)
 x_test = test.drop(cols_to_drop, 1)
 
 # Clean the data
 x_train = perform_feature_scaling(x_train)
-# x_validation = perform_feature_scaling(x_validation)
+x_validation = perform_feature_scaling(x_validation)
 x_test = perform_feature_scaling(x_test)
 
-roc_auc_scores = {}
+test_roc_auc_scores = {}
+validation_roc_auc_scores = {}
+
 for dev in devices:
     print("Learning models for device: {}".format(dev))
 
     # Get data labels
     y_train = pd.Series(get_is_dev_vec(dev, train[y_col]))
-    # y_validation = pd.Series(get_is_dev_vec(dev, validation[y_col]))
+    y_validation = pd.Series(get_is_dev_vec(dev, validation[y_col]))
     y_test = pd.Series(get_is_dev_vec(dev, test[y_col]))
 
     if y_train.sum() == 0:
@@ -137,29 +140,51 @@ for dev in devices:
     os.makedirs(dev_models_dir, exist_ok=True)
     joblib.dump(cart, os.path.join(dev_models_dir,'{}_cart.pkl'.format(dev)))
 
-    if y_test.sum() == 0:
-        print('No {} sessions in test data. skipping model evaluation.'.format(dev))
-        continue
-
-
-    # Plot ROC AUC curves
     n_splits = 10
     ub = BaggingClassifier(warm_start=True, n_estimators=0)
-
     for split in range(n_splits):
         x_res, y_res = RandomUnderSampler(random_state=split).fit_sample(x_train, y_train)
         ub.n_estimators += 1
         ub.fit(x_res, y_res)
 
+    # Plot AUC ROC curves for validation data
+    if y_test.sum() == 0:
+        print('No {} sessions in validation data. skipping model evaluation.'.format(dev))
+        continue
+
     f, ax = plt.subplots(figsize=(6, 6))
 
-    scores = []
-    scores.append(roc_auc_plot(y_test, ub.predict_proba(x_test), label='UB ', l='-'))
-    scores.append(roc_auc_plot(y_test, forest.predict_proba(x_test), label='FOREST ', l='--'))
-    scores.append(roc_auc_plot(y_test, cart.predict_proba(x_test), label='CART', l='-.'))
-    scores.append(roc_auc_plot(y_test, rus.predict_proba(x_test), label='RUS', l=':'))
+    validation_roc_auc_scores[dev] = [
+        roc_auc_plot(y_validation, ub.predict_proba(x_validation), label='UB ', l='-'),
+        roc_auc_plot(y_validation, forest.predict_proba(x_validation), label='FOREST ', l='--'),
+        roc_auc_plot(y_validation, cart.predict_proba(x_validation), label='CART', l='-.'),
+        roc_auc_plot(y_validation, rus.predict_proba(x_validation), label='RUS', l=':')
+    ]
 
-    roc_auc_scores[dev] = scores
+    ax.plot([0, 1], [0, 1], color='k', linewidth=0.5, linestyle='--',
+            label='Random Classifier')
+    ax.legend(loc="lower right")
+    ax.set_xlabel('False Positive Rate')
+    ax.set_ylabel('True Positive Rate')
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1])
+    ax.set_title('{} Validation  Receiver Operator Characteristic curves'.format(dev))
+    sns.despine()
+    plt.show()
+
+    # Plot ROC AUC curves for test data
+    if y_test.sum() == 0:
+        print('No {} Test sessions in test data. skipping model evaluation.'.format(dev))
+        continue
+
+    f, ax = plt.subplots(figsize=(6, 6))
+
+    test_roc_auc_scores[dev] = [
+        roc_auc_plot(y_test, ub.predict_proba(x_test), label='UB ', l='-'),
+        roc_auc_plot(y_test, forest.predict_proba(x_test), label='FOREST ', l='--'),
+        roc_auc_plot(y_test, cart.predict_proba(x_test), label='CART', l='-.'),
+        roc_auc_plot(y_test, rus.predict_proba(x_test), label='RUS', l=':')
+    ]
 
     ax.plot([0, 1], [0, 1], color='k', linewidth=0.5, linestyle='--',
             label='Random Classifier')
@@ -175,7 +200,8 @@ for dev in devices:
 
 # Write ROC AUC scores to csv
 os.makedirs(os.path.abspath('evaluations'), exist_ok=True)
-pd.DataFrame(roc_auc_scores).to_csv(os.path.abspath('evaluations/roc_auc_scores.csv'))
+pd.DataFrame(validation_roc_auc_scores).to_csv(os.path.abspath('evaluations/validation_roc_auc_scores.csv'))
+pd.DataFrame(test_roc_auc_scores).to_csv(os.path.abspath('evaluations/test_roc_auc_scores.csv'))
 
 
 
