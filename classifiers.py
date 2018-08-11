@@ -59,8 +59,7 @@ def roc_auc_plot(y_true, y_proba, label=' ', l='-', lw=1.0):
 
 y_col = 'device_category'
 cols_to_drop = ['device_category']
-use_cols = pd.read_csv(os.path.abspath('data/train.csv'))
-
+use_cols = pd.read_csv(os.path.abspath('data/use_cols.csv'))
 
 # Load Data
 train = pd.read_csv(os.path.abspath('data/train.csv'), usecols=use_cols, low_memory=False)
@@ -201,7 +200,6 @@ pd.DataFrame(test_roc_auc_scores).to_csv(os.path.abspath('evaluations/test_roc_a
 #device_sequence_classifier = DeviceSequenceClassifier('security_camera')
 #cart = device_sequence_classifier.train(cart, x_train, y_train, train)
 #print(device_sequence_classifier.predict(cart, [x_train]))
-
 
 
 print("@@@ DONE @@@")
