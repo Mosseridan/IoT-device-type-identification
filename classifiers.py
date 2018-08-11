@@ -27,24 +27,6 @@ def is_dev(this_dev_name, dev_name):
 def get_is_dev_vec(this_dev_name, dev_names):
     return [is_dev(this_dev_name, dev_name) for dev_name in dev_names]
 
-def clear_missing_data2(x_train, y_train):
-    """ 
-    This method is used to remove all the instances (examples)
-    in which there is data missing (marked by question marks). In case of 
-    even one missing value in an example, we remove the entire example from
-    the dataset 
-    """
-    x_train = x_train.replace("?", numpy.NaN)
-    dropped_rows = x_train.index[x_train.isnull().any(1)].tolist()
-    x_train = x_train.dropna(0)
-    new_y_train = []
-    for i in range(0,len(y_train)):
-        if i in dropped_rows:
-            continue
-        else:
-            new_y_train.append(y_train[i])
-    return x_train, new_y_train
-
 
 def clear_missing_data(df):
     df_with_nan = df.replace("?", numpy.NaN)
