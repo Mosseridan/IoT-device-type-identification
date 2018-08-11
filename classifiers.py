@@ -77,7 +77,8 @@ def roc_auc_plot(y_true, y_proba, label=' ', l='-', lw=1.0):
             label="%s (area=%.3f)" % (label, score))
     return score
 
-
+def load_model_from_pkl(pkl_file_full_path):
+    return joblib.load(pkl_file_full_path) 
 
 y_col = 'device_category'
 cols_to_drop = ['device_category']
