@@ -53,7 +53,7 @@ def perform_feature_scaling(x_train):
     scaler.fit(x_train)
     return scaler.transform(x_train)
 
-def _perform_feature_selection(self, X_train, y_train, k_val):
+def perform_feature_selection(X_train, y_train, k_val):
     """ This method is used in order to perform a feature selection by selecting
     the best k_val features from X_train. It does so according to the chi2
     criterion. The method prints the chosen features and creates
