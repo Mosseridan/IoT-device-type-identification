@@ -9,6 +9,7 @@ from sklearn.ensemble import BaggingClassifier, AdaBoostClassifier
 from sklearn.utils import shuffle
 from sklearn.externals import joblib
 from sklearn.metrics import roc_curve, roc_auc_score
+from sklearn.feature_selection import chi2, SelectKBest
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,6 +26,11 @@ def is_dev(this_dev_name, dev_name):
 
 
 def get_is_dev_vec(this_dev_name, dev_names):
+    """
+    This method generates a list with entries 0 or 1 to indicate which of the
+    entries in the dev_names list is the device we are currently training/testing
+    a classifier for. 
+    """
     return [is_dev(this_dev_name, dev_name) for dev_name in dev_names]
 
 
@@ -46,6 +52,22 @@ def perform_feature_scaling(x_train):
     scaler = MinMaxScaler()
     scaler.fit(x_train)
     return scaler.transform(x_train)
+
+def _perform_feature_selection(self, X_train, y_train, k_val):
+    """ This method is used in order to perform a feature selection by selecting
+    the best k_val features from X_train. It does so according to the chi2
+    criterion. The method prints the chosen features and creates
+    a new instance of X_train with only these features and returns it 
+    """
+    print("**********FEATURE SELECTION**********")
+    # Create and fit selector
+    selector = SelectKBest(chi2, k=k_val)
+    selector.fit(X_train, y_train)
+    #Get idxs of columns to keep
+    idxs_selected = selector.get_support(indices=True)
+    print(idxs_selected)
+    X_new = SelectKBest(chi2, k=k_val).fit_transform(X_train, y_train)
+    return X_new
     
 
 def roc_auc_plot(y_true, y_proba, label=' ', l='-', lw=1.0):
@@ -84,7 +106,7 @@ x_train = train.drop(cols_to_drop, 1)
 x_validation = validation.drop(cols_to_drop, 1)
 x_test = test.drop(cols_to_drop, 1)
 
-# Clean the data
+# Perform feature scaling for X
 x_train = perform_feature_scaling(x_train)
 x_validation = perform_feature_scaling(x_validation)
 x_test = perform_feature_scaling(x_test)
