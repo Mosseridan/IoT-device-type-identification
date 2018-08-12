@@ -86,8 +86,36 @@ class ExperimentsManager:
             fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
             print("DEVICE:{0}".format(device))
             print(metrics.auc(fpr, tpr))
-        
-        
+            
+    def experiment_naive_bayes(self):
+        """
+        Running the Gaussian Naive Bayes classifier for 
+        each device 
+        """
+        for device in self.devices:
+            clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_naive_bayes.pkl".format(device))
+            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+            pred = np.array(clf.predict(self.x_test))
+            fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
+            print("DEVICE:{0}".format(device))
+            print(metrics.auc(fpr, tpr))
+            
+    def experiment_MLP(self):
+        """
+        Running all the different MLP classifiers for all devices and prints
+        their AUC value accordingly 
+        """
+        for device in self.devices:
+            for first_layer_neurons in [1,2,3,4,5]:
+                for second_layer_neurons in [1,2,3,4,5]:
+                    clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_MLP_{1}_{2}_sgd.pkl".format(device,first_layer_neurons,second_layer_neurons))
+                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+                    pred = np.array(clf.predict(self.x_test))
+                    fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
+                    print("DEVICE:{0},FIRST LAYER:{1},SECOND LAYER:{2}".format(device, first_layer_neurons, second_layer_neurons))
+                    print(metrics.auc(fpr, tpr))
+
+
     def load_model_from_pkl(self, pkl_file_full_path):
         return joblib.load(pkl_file_full_path)
 
