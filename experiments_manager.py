@@ -18,19 +18,17 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn import metrics
 
 class ExperimentsManager:
-    def __init__(self):
-        self.devices = ['baby_monitor', 'lights','motion_sensor','security_camera',
-                        'smoke_detector','socket','thermostat','TV','watch','water_sensor']
-
+    def __init__(self, dataset_csv):
         use_cols = pd.read_csv(os.path.abspath('data/use_cols.csv'))
-        test = pd.read_csv(os.path.abspath('data/test.csv'), usecols=use_cols, low_memory=False)
+        cols_to_drop = ['device_category']
+        y_col = 'device_category'
+        test = pd.read_csv(os.path.abspath(dataset_csv), usecols=use_cols, low_memory=False)
         test = shuffle(test)
         self.test = self.clear_missing_data(test)
-        cols_to_drop = ['device_category']
-        x_test = test.drop(cols_to_drop, 1)
-        self.x_test = self.perform_feature_scaling(x_test)
-        self.y_col = 'device_category'
-        
+        self.x_test = self.perform_feature_scaling(self.test.drop(cols_to_drop, 1))
+        self.y_test = self.test[y_col]
+        self.devices = self.y_test.unique()
+
     def experiment_random_forest(self):
         """
         Running all the different random forest classifiers for all devices and prints
@@ -40,7 +38,7 @@ class ExperimentsManager:
             for criterion_name in ['gini','entropy']:
                 for forest_size in [3,7,11,15,19,21,23]:
                     clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_forest_{1}_{2}.pkl".format(device,criterion_name,forest_size))
-                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
                     pred = np.array(clf.predict(self.x_test))
                     fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
                     print("DEVICE:{0},CRITERION:{1},SIZE:{2}".format(device, criterion_name, forest_size))
@@ -55,7 +53,7 @@ class ExperimentsManager:
             for criterion_name in ['gini','entropy']:
                 for samples_size in [50,100,200,400]:
                     clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_cart_{1}_{2}_samples_leaf.pkl".format(device,criterion_name,samples_size))
-                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
                     pred = np.array(clf.predict(self.x_test))
                     fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
                     print("DEVICE:{0},CRITERION:{1},SIZE:{2}".format(device, criterion_name, samples_size))
@@ -68,7 +66,7 @@ class ExperimentsManager:
         """
         for device in self.devices:
             clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_knn_5_uniform.pkl".format(device))
-            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
             pred = np.array(clf.predict(self.x_test))
             fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
             print("DEVICE:{0}".format(device))
@@ -81,7 +79,7 @@ class ExperimentsManager:
         """
         for device in self.devices:
             clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_sgd.pkl".format(device))
-            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
             pred = np.array(clf.predict(self.x_test))
             fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
             print("DEVICE:{0}".format(device))
@@ -94,7 +92,7 @@ class ExperimentsManager:
         """
         for device in self.devices:
             clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_naive_bayes.pkl".format(device))
-            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+            y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
             pred = np.array(clf.predict(self.x_test))
             fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
             print("DEVICE:{0}".format(device))
@@ -109,7 +107,7 @@ class ExperimentsManager:
             for first_layer_neurons in [1,2,3,4,5]:
                 for second_layer_neurons in [1,2,3,4,5]:
                     clf = self.load_model_from_pkl(r"C:\Users\deanecke\Documents\Project_updated\IoT-device-type-identification-master\models\{0}\{0}_MLP_{1}_{2}_sgd.pkl".format(device,first_layer_neurons,second_layer_neurons))
-                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.test[self.y_col])))
+                    y_test = np.array(pd.Series(self.get_is_dev_vec(device, self.y_test)))
                     pred = np.array(clf.predict(self.x_test))
                     fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
                     print("DEVICE:{0},FIRST LAYER:{1},SECOND LAYER:{2}".format(device, first_layer_neurons, second_layer_neurons))
@@ -135,7 +133,7 @@ class ExperimentsManager:
         """
         scaler = MinMaxScaler()
         scaler.fit(x_train)
-        return scaler.transform(x_train)
+        return pd.DataFrame(scaler.transform(x_train), columns=x_train.columns)
 
 
     def get_is_dev_vec(self, this_dev_name, dev_names):
@@ -145,9 +143,3 @@ class ExperimentsManager:
         a classifier for. 
         """
         return [self.is_dev(this_dev_name, dev_name) for dev_name in dev_names]
-    
-    
-experiments_manager = ExperimentsManager()
-#experiments_manager.experiment_random_forest()
-#experiments_manager.experiment_decision_trees()
-experiments_manager.experiment_sgd()

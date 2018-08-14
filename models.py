@@ -16,7 +16,6 @@ import seaborn as sns
 
 sns.set_style("white")
 
-from device_session_regressor import DeviceSessionRegressor
 from device_session_classifier import DeviceSessionClassifier
 from device_sequence_classifier import DeviceSequenceClassifier
 
