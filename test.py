@@ -7,7 +7,7 @@ from device_sequence_classifier import DeviceSequenceClassifier
 from sklearn import metrics
 
 device = 'watch'
-other_device = 'thermostat'
+other_device = 'motion_sensor'
 model_pkl = r'models/{0}/{0}_cart_entropy_50_samples_leaf.pkl'.format(device)
 dataset_csv = 'data/validation.csv'
 sc = DeviceSequenceClassifier(device, model_pkl, is_model_pkl=True)
@@ -30,7 +30,7 @@ other_dev_sess = other_dev_sess.drop(sc.y_col, axis=1).values
 other_dev_sess = perform_feature_scaling(other_dev_sess)
 
 sc.find_opt_seq_len(validation)
-seq_len = 7
+seq_len = 4
 seqs = [other_dev_sess[i:i+seq_len] for i in range(len(other_dev_sess)-seq_len)]
 
 # seq_len = 1
@@ -42,5 +42,7 @@ y_actual = [classification] * 100
 x = m.predict(other_dev_sess)
 print(metrics.accuracy_score(y_actual,x))
 pred = sc.predict(seqs)
+y_actual = [classification] * len(seqs)
+print(metrics.accuracy_score(y_actual,pred))
 print(pred)
 print("YAYY!!")
