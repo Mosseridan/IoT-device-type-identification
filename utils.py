@@ -84,8 +84,8 @@ def eval_predictions(y_true, y_pred):
     roc_auc_score = metrics.roc_auc_score(y_true, y_pred)
     print(classification_report)
 
-    classes = sorted(list(pd.Series(y_true).unique()))
-
+    # classes = sorted(list(pd.Series(y_true).unique()))
+    classes = [0,1]
     return {
         'class': classes,
         'accuracy_score': [accuracy_score]*len(classes),
