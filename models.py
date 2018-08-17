@@ -1,5 +1,5 @@
 import pandas as pd
-import numpy
+import numpy as np
 import os
 from sklearn import tree, ensemble
 from imblearn.under_sampling import RandomUnderSampler
@@ -34,7 +34,7 @@ def get_is_dev_vec(this_dev_name, dev_names):
 
 
 def clear_missing_data(df):
-    df_with_nan = df.replace("?", numpy.NaN)
+    df_with_nan = df.replace("?", np.NaN)
     return df_with_nan.dropna(0)
 
 

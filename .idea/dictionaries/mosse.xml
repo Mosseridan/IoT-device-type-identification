@@ -1,9 +1,12 @@
 <component name="ProjectDictionaryState">
   <dictionary name="mosse">
     <words>
+      <w>dataset</w>
       <w>datasets</w>
       <w>devs</w>
+      <w>fscore</w>
       <w>gboost</w>
+      <w>idxs</w>
       <w>pred</w>
       <w>regressor</w>
       <w>scaler</w>
