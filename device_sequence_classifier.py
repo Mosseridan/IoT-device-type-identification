@@ -69,8 +69,7 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
     def get_sub_sequences(self, sessions, seq_len=None):
         if not seq_len:
             seq_len = self.opt_seq_len
-        sessions = utils.perform_feature_scaling(sessions)
-        return [sessions[start:start+seq_len] for start in range(len(sessions)-seq_len)]
+        return utils.get_sub_sequences(sessions, seq_len)
 
     def split_data(self, data):
         data = utils.clear_missing_data(data)

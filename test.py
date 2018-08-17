@@ -50,6 +50,9 @@ for dataset_name in datasets:
     print('@', dataset_name)
     dataset = utils.load_data_from_csv('data/{}.csv'.format(dataset_name), use_cols=use_cols)
     for dev_name in devices:
+        if dev_name == 'thermostat':
+            continue
+
         for model_pkl in os.listdir(os.path.join(models_dir,dev_name)):
             model_name = os.path.splitext(model_pkl)[0]
             print('@@', dev_name, model_name)

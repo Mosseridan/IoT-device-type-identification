@@ -35,6 +35,10 @@ def split_data(data, y_col):
     y = data[y_col]
     return x, y
 
+def get_sub_sequences(sessions, seq_len):
+    sessions = perform_feature_scaling(clear_missing_data(sessions))
+    return [sessions[start:start+seq_len] for start in range(len(sessions)-seq_len)]
+
 
 def clear_missing_data(df):
     df_with_nan = df.replace("?", np.NaN)
@@ -81,11 +85,13 @@ def eval_predictions(y_true, y_pred):
     # Compute precision, recall, F-measure and support for each class
     precision, recall, fscore, support = metrics.precision_recall_fscore_support(y_true, y_pred)
     # Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
-    roc_auc_score = metrics.roc_auc_score(y_true, y_pred)
     print(classification_report)
 
-    # classes = sorted(list(pd.Series(y_true).unique()))
-    classes = [0,1]
+    classes = sorted(list(pd.Series(y_true).unique()))
+    if len(classes) > 1:
+        roc_auc_score = metrics.roc_auc_score(y_true, y_pred)
+    else:
+        roc_auc_score = -1
     return {
         'class': classes,
         'accuracy_score': [accuracy_score]*len(classes),
