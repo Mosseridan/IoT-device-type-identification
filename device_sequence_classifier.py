@@ -55,7 +55,7 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
             start = 0
             seq_len = 1
             while start + seq_len < len(dev_sessions):
-                is_dev_pred = self.predict([dev_sessions[start:start + seq_len]])
+                is_dev_pred = (self.predict([dev_sessions[start:start + seq_len]]))[0]
                 if is_dev == is_dev_pred:
                     start += 1
                 else:
