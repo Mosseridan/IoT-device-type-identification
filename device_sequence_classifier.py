@@ -77,6 +77,7 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
         x = []
         y = []
         for dev_name, dev_sessions in data.groupby(self.y_col):
+            dev_sessions = dev_sessions.drop(['device_category'], axis=1)
             dev_sessions = utils.perform_feature_scaling(dev_sessions)
             is_dev = self.is_dev(dev_name)
             seqs = self.get_sub_sequences(dev_sessions)
