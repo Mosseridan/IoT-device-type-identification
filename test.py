@@ -26,6 +26,7 @@ def eval_classifier(
         metrics_dir):
     dataset_metrics, confusion_matrix = classifier.eval_on_dataset(dataset)
     shape = dataset_metrics['class'].shape
+    dataset_metrics['device'] = np.full(shape, classifier.dev_name)
     dataset_metrics['model'] = np.full(shape, model_name)
     dataset_metrics['dataset'] = np.full(shape, dataset_name)
     dataset_metrics['classification_method'] = np.full(shape, classification_method)
@@ -171,14 +172,30 @@ def dev_seq_cls_exp(
 datasets = ['validation', 'test']
 devices = list(pd.read_csv(os.path.abspath('data/devices.csv')))
 models_dir = os.path.abspath('models')
-metrics_dir = os.path.abspath('metrics')
+metrics_dir = os.path.abspath('metrics/sess_cls')
 
 run_experiment_with_datasets_devices(dev_sess_cls_exp, datasets, devices, models_dir, metrics_dir)
 
-# datasets = ['train', 'validation', 'test']
-# run_experiment_with_datasets_devices(dev_seq_cls_exp, datasets, devices, models_dir, metrics_dir)
+datasets = ['train', 'validation', 'test']
+models_dir = os.path.abspath('models/best')
+metrics_dir = os.path.abspath('metrics/seq_cls')
 
-# run_multi_dev_experiments(datasets, dev_model_csv, pred_methods)
+run_experiment_with_datasets_devices(dev_seq_cls_exp, datasets, devices, models_dir, metrics_dir)
+
+opt_models_metrics_csv = os.path.join(metrics_dir,'metrics.csv')
+opt_models_metrics = pd.read_csv(opt_models_metrics_csv)
+train_metrics = opt_models_metrics.groupby('dataset').get_group('train')
+
+dev_model_combos = {dev_name: [{'model': dev_metrics['model'], 'opt_seq_len': dev_metrics['opt_seq_len']}]
+                    for dev_name, dev_metrics in train_metrics.groupby('device')}
+multi_dev_models_dir =  os.path.join('models/multi_dev')
+os.makedirs(multi_dev_models_dir, exist_ok=True)
+dev_model_csv = os.path.join(multi_dev_models_dir, 'dev_model.csv')
+pd.DataFrame(dev_model_combos).to_csv(dev_model_csv)
+
+pred_methods = ['first', 'random', 'all']
+
+run_multi_dev_experiments(datasets, dev_model_csv, pred_methods)
 
 print('YAYYY!!!')
 #
