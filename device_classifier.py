@@ -10,6 +10,7 @@ class DeviceClassifier(DeviceSequenceClassifier):
                  dev_name,
                  model,
                  is_model_pkl=False,
+                 opt_seq_len=1,
                  pred_method='all',
                  use_cols=None,
                  y_col=None,
@@ -20,11 +21,13 @@ class DeviceClassifier(DeviceSequenceClassifier):
         super().__init__(dev_name=dev_name,
                          model=model,
                          is_model_pkl=is_model_pkl,
+                         opt_seq_len=opt_seq_len,
                          use_cols=use_cols,
                          y_col=y_col, train=train,
                          is_train_csv=is_train_csv,
                          validation=validation,
                          is_validation_csv=is_validation_csv)
+        self.pred_method = pred_method
 
     def train(self, train, validation):
         super().train(train, validation)

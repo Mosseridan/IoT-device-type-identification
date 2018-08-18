@@ -8,7 +8,7 @@ class MultipleDeviceClassifier:
     """
 
     def __init__(self,
-                 dev_model_dict,
+                 dev_model_combo,
                  is_model_pkl=False,
                  pred_method='all',
                  use_cols=None,
@@ -21,8 +21,9 @@ class MultipleDeviceClassifier:
         self.dev_classifiers = [
             DeviceClassifier(
                 dev_name,
-                dev_model,
+                dev_model_combo[dev_name]['model'],
                 is_model_pkl=is_model_pkl,
+                opt_seq_len=dev_model_combo[dev_name]['opt_seq_len'],
                 pred_method=pred_method,
                 use_cols=use_cols,
                 y_col=y_col,
@@ -30,7 +31,7 @@ class MultipleDeviceClassifier:
                 is_train_csv=is_train_csv,
                 validation=validation,
                 is_validation_csv=is_validation_csv)
-            for dev_name, dev_model in dev_model_dict.items()]
+            for dev_name in dev_model_combo]
 
     def train(self, train, validation):
         for dev_classifier in self.dev_classifiers:
@@ -41,7 +42,7 @@ class MultipleDeviceClassifier:
         for dev_classifier in self.dev_classifiers:
             if dev_classifier.predict([dev_sessions])[0]:
                 return dev_classifier.dev_name
-        return None
+        return 'unknown'
 
     def predict(self, devs_sessions):
         """ This method returns the name of the device the sessions originated from or None in case of an unknown device"""

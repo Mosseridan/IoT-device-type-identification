@@ -1,1 +1,1 @@
-model,dataset,classification_method,seq_len,opt_seq_len,class,accuracy_score,precision,recall,fscore,support,roc_auc_score,tp,fp,tn,fn
+model,dataset,classification_method,seq_len,opt_seq_len,class,accuracy_score,precision,recall,fscore,support,roc_auc_score

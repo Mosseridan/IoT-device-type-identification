@@ -81,27 +81,28 @@ def eval_predictions(y_true, y_pred):
     classification_report = metrics.classification_report(y_true, y_pred)
     # Compute confusion matrix to evaluate the accuracy of a classification
     confusion_matrix = metrics.confusion_matrix(y_true, y_pred)
-    tn, fp, fn, tp = confusion_matrix.ravel()
     # Compute precision, recall, F-measure and support for each class
     precision, recall, fscore, support = metrics.precision_recall_fscore_support(y_true, y_pred)
     # Compute Area Under the Receiver Operating Characteristic Curve (ROC AUC) from prediction scores.
     print(classification_report)
 
-    classes = sorted(list(pd.Series(y_true).unique()))
-    if len(classes) > 1:
+    classes = np.unique(np.array(y_true))
+    if classes.size > 1:
         roc_auc_score = metrics.roc_auc_score(y_true, y_pred)
     else:
-        roc_auc_score = -1
-    return {
+        if precision.size > 1:
+            if classes[0] == 0 or classes[0] == 1:
+                classes = np.array([0, 1])
+            else:
+                classes = np.array([0, classes[0]])
+        roc_auc_score = 0
+    metrics_dict = {
         'class': classes,
-        'accuracy_score': [accuracy_score]*len(classes),
+        'accuracy_score': np.full(classes.shape, accuracy_score),
         'precision': precision,
         'recall': recall,
         'fscore': fscore,
         'support': support,
-        'roc_auc_score': [roc_auc_score]*len(classes),
-        'tp': [tp]*len(classes),
-        'fp': [fp]*len(classes),
-        'tn': [tn]*len(classes),
-        'fn': [fn]*len(classes)
+        'roc_auc_score': np.full(classes.shape, roc_auc_score),
     }
+    return metrics_dict, confusion_matrix

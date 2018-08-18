@@ -10,6 +10,7 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
                  dev_name,
                  model,
                  is_model_pkl=False,
+                 opt_seq_len=1,
                  use_cols=None,
                  y_col=None,
                  train=None,
@@ -25,9 +26,9 @@ class DeviceSequenceClassifier(DeviceSessionClassifier):
         if train and validation:
             if is_validation_csv:
                 validation = utils.load_data_from_csv(validation, use_cols)
-            self.opt_seq_len = self.find_opt_seq_len(validation)
+            self.find_opt_seq_len(validation)
         else:
-            self.opt_seq_len = 1
+            self.opt_seq_len = opt_seq_len
 
     def train(self, train, validation):
         super().train(train)
